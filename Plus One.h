@@ -1,24 +1,16 @@
 class Solution {
 public:
     vector<int> plusOne(vector<int> &digits) {
-        if(digits.size() <= 0)
-            return digits;
-            
-        vector<int> res;
-        int pos = digits.size() - 1;
         int carry = 1;
-        while(pos >= 0 && digits[pos] + carry > 9) {
-            digits[pos] = digits[pos] + carry - 10;
-            pos--;
+        for(int i = digits.size()-1; i >= 0; --i) {
+            int sum = digits[i] + carry;
+            digits[i] = sum % 10;
+            carry = sum / 10;
+            if(carry == 0) break;
         }
-        if(pos >= 0){
-            digits[pos] += carry;
-        } else {
-            res.push_back(1);
+        if(carry) {
+            digits.insert(digits.begin(), carry);
         }
-        for(int i = 0; i < digits.size(); ++i) 
-            res.push_back(digits[i]);
-            
-        return res;
+        return digits;
     }
 };
