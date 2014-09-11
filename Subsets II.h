@@ -1,33 +1,28 @@
 class Solution {
 public:
     vector<vector<int> > subsetsWithDup(vector<int> &S) {
+        vector<vector<int> > res;
+        if(S.size() == 0) return res;
+        
         sort(S.begin(), S.end());
-        vector<vector<int> >res;
-        vector<int> tmp;
-        sub(S, tmp, -1, res);
+        vector<int> emptyset;
+        generateSubsets(S, 0, emptyset, res);
         
         return res;
-        
     }
     
-    void sub(vector<int> &S, vector<int> curr, int pos, vector<vector<int> > &res) {
-        if(pos >= (int)(S.size()))//S.size() returns unsigned int(wrong when pos is neg)!!! so must cast to int!
-            return;
-        if(pos >= 0)
-            curr.push_back(S[pos]);
+private:
+    void generateSubsets(vector<int> & S, int pos, vector<int> curr, vector<vector<int> > &res) {
         res.push_back(curr);
         
-        sub(S, curr, pos+1, res);
-        for(int i = pos+2; i < S.size(); ++i) {
-            if(!checkdup(S, i)) {
-                sub(S, curr, i, res);
-            }
+        int prev = S[pos] - 1; // just need some number not equal to S[pos]
+        for(int i = pos; i < S.size(); ++i) {
+            if(S[i] == prev) continue;
+            curr.push_back(S[i]);
+            generateSubsets(S, i + 1, curr, res);
+            curr.pop_back();
+            
+            prev = S[i];
         }
-    }
-    
-    bool checkdup(vector<int> &S, int pos) {
-        if(pos < 1)
-            return false;
-        return S[pos-1]==S[pos];
     }
 };
