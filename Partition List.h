@@ -9,42 +9,29 @@
 class Solution {
 public:
     ListNode *partition(ListNode *head, int x) {
-        if(!head)
-            return head;
-        ListNode *head_left = NULL;
-        ListNode *head_right = NULL;
-        ListNode *pos_left = NULL;
-        ListNode *pos_right = NULL;
+        if(!head || !head->next) return head;
         
-        ListNode *pos = head;
-        while(pos) {
-            if(pos->val < x) {
-                if(head_left) {
-                    pos_left->next = pos;
-                    pos_left = pos;
-                } else {
-                    head_left = pos;
-                    pos_left = pos;
-                }
+        ListNode *head1 = new ListNode(0);
+        ListNode *head2 = new ListNode(0);
+        
+        ListNode *p1 = head1;
+        ListNode *p2 = head2;
+        
+        ListNode *p = head;
+        while(p) {
+            ListNode *next = p->next;
+            p->next = NULL;
+            if(p->val < x) {
+                p1->next = p;
+                p1 = p;
             } else {
-                if(head_right) {
-                    pos_right->next = pos;
-                    pos_right = pos;
-                } else {
-                    head_right = pos;
-                    pos_right = pos;
-                }
+                p2->next = p;
+                p2 = p;
             }
-            pos = pos->next;
+            p = next;
         }
-        if(head_left) {
-            pos_left->next = head_right;
-            if(head_right)
-                pos_right->next = NULL;
-            return head_left; 
-        } else {
-            pos_right->next = NULL;
-            return head_right;
-        }
+        p1->next = head2->next;
+        
+        return head1->next;
     }
 };
