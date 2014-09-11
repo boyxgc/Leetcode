@@ -1,21 +1,22 @@
 class Solution {
 public:
+
     vector<vector<int> > subsets(vector<int> &S) {
         sort(S.begin(), S.end());
+        vector<int> emptyv;
+        vector<vector<int> > res;
+        generate(S, 0, emptyv, res);
         
-        vector<vector<int> >res;
-        vector<int> tmpres;
-        sub(S, res, tmpres, -1);
         return res;
     }
-    
-    void sub(vector<int> &S, vector<vector<int> > &res, vector<int> tmpres, int pos) {
-        if(pos >= 0)
-            tmpres.push_back(S[pos]);
-        res.push_back(tmpres);
+private:
+    void generate(vector<int> &S, int pos, vector<int> curr, vector<vector<int> > & res) {
+        res.push_back(curr);
         
-        for(int i = pos+1; i < S.size(); ++i) {
-            sub(S, res, tmpres, i);
+        for(int i = pos; i < S.size(); ++i) {
+            curr.push_back(S[i]);
+            generate(S, i + 1, curr, res);
+            curr.pop_back();
         }
     }
 };
