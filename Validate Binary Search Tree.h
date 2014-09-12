@@ -10,24 +10,23 @@
 class Solution {
 public:
     TreeNode *prev;
-    bool inorder(TreeNode *root){
-        if(!root)
-            return true;
-        bool left = inorder(root->left);
-        if(!left)
-            return false;
-        if(prev == NULL){
-            prev = root;
-        } else {
-            if(root->val <= prev->val)
-                return false;
-            prev = root;
-        }
-        return inorder(root->right);
-    }
-    
     bool isValidBST(TreeNode *root) {
         prev = NULL;
-        return inorder(root);
+        
+        return validate(root);
     }
+    
+    bool validate(TreeNode *root) {
+        if(!root) return true;
+        
+        if(!validate(root->left)) return false;
+        
+        if(prev) {
+            if(prev->val >= root->val) return false;
+        }
+        prev = root;
+        
+        return validate(root->right);
+    }
+    
 };
