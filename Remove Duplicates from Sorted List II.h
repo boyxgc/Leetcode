@@ -9,25 +9,24 @@
 class Solution {
 public:
     ListNode *deleteDuplicates(ListNode *head) {
-        if(!head)
-            return head;
         ListNode *newhead = new ListNode(0);
-        ListNode *p1 = newhead;
-        ListNode *p2 = head;
+        newhead->next = head;
         
-        while(p2) {
-            if(p2->next && p2->next->val == p2->val){
-                int val = p2->val;
-                while(p2 && p2->val == val){
-                    p2 = p2->next;
+        ListNode *p = newhead;
+        while(p && p->next && p->next->next) {
+            if(p->next->val == p->next->next->val) {
+                int val = p->next->val;
+                while(p->next && p->next->val == val) {
+                    ListNode *tmp = p->next;
+                    p->next = p->next->next;
+                    
+                    delete tmp;
                 }
             } else {
-                p1->next = p2;
-                p1 = p1->next;
-                p2 = p2->next;
-                p1->next = NULL;//cut connection from original list
+                p = p->next;
             }
         }
+        
         return newhead->next;
     }
 };
