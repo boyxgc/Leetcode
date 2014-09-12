@@ -1,26 +1,23 @@
 class Solution {
 public:
     double pow(double x, int n) {
-        if(x == 0.0)
-            return 0;
-        if(x == 1.0)
-            return 1;
-        if(x == -1)
-            return (n&1) ? -1 : 1;
-        if(n == 0 && x != 0.0){
-            return 1;
+        if(x == 0) return 0;
+        if(n == 0) return 1;
+        if(x == 1) return 1;
+        if(x == -1) return (n&1) ? -1 : 1;
+        
+        bool isneg = false;
+        if(n < 0) {
+            isneg = true;
+            n = -n;
         }
         
-        double res = 1.0;
-        int absn = (n > 0) ? n : -n;
-        while((absn--) > 0) {
-            res *= x;
-            if(res == 0)
-                break;
+        double product = 1.0;
+        while(n--) {
+            product *= x;
+            if(product == 0) break;
         }
-        if(n > 0)
-            return res;
-        else
-            return 1/res;
+        
+        return isneg ? 1.0/product : product;
     }
 };
