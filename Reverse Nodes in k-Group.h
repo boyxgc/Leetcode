@@ -9,30 +9,31 @@
 class Solution {
 public:
     ListNode *reverseKGroup(ListNode *head, int k) {
-        if(!head || !head->next)
-            return head;
         ListNode *newhead = new ListNode(0);
         newhead->next = head;
+
         ListNode *p = newhead;
-        ListNode *q = p->next;
-        
-        while(q && q->next){
-            ListNode *pos = q;
-            for(int i = 1; i < k &&pos; ++i)
-                pos = pos->next;
-            if(!pos) break;//
-            
-            int count = k;
-            while(--count && q->next){// reverse q->next to link to p->next;
-                ListNode *tmp = q->next->next;
-                q->next->next = p->next;
+        while(p) {
+            ListNode *q = p->next;
+            ListNode *grp_end = probe(p, k);
+            if(!grp_end) break;
+            while(p->next != grp_end) {
+                ListNode *tmp = p->next;
                 p->next = q->next;
-                q->next = tmp;
+                q->next = q->next->next;
+                p->next->next = tmp;
             }
+            
             p = q;
-            q = q->next;
         }
         
         return newhead->next;
+    }
+    
+    ListNode *probe(ListNode *p, int count) {
+        while(p && count--) {
+            p = p->next;
+        }
+        return p;
     }
 };
