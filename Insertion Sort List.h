@@ -9,21 +9,20 @@
 class Solution {
 public:
     ListNode *insertionSortList(ListNode *head) {
-        if(!head || !head->next)
-            return head;
+        if(!head || !head->next) return head;
+        
         ListNode *newhead = new ListNode(0);
-        newhead->next = head;
-        ListNode *pos = head->next;
-        head->next = NULL;
-        while(pos){
-            ListNode *posnext = pos->next;
-            ListNode *tmp = newhead;
-            while(tmp->next && tmp->next->val < pos->val){
-                tmp = tmp->next;
+        ListNode *p = head;
+        while(p) {
+            ListNode *sortp = newhead;
+            while(sortp && sortp->next && p->val > sortp->next->val) {
+                sortp = sortp->next;
             }
-            pos->next = tmp->next;
-            tmp->next = pos;
-            pos = posnext;
+            ListNode * next = p->next;
+            p->next =sortp->next;
+            sortp->next = p;
+            
+            p = next;
         }
         return newhead->next;
     }
