@@ -1,40 +1,24 @@
 class Solution {
 public:
     string addBinary(string a, string b) {
-        string c ="";
         reverse(a.begin(), a.end());
         reverse(b.begin(), b.end());
-        
-        int i = 0;
+        string sum = "";
         int carry = 0;
-        while(i < a.size() && i < b.size()) {
-            int tmp = carry + a[i]-'0'+b[i]-'0';
-            carry = tmp/2;
-            stringstream ss;
-            ss << tmp%2;
-            c += ss.str();
-            i++;
+        for (int i = 0; i < a.size() || i < b.size(); ++i) {
+            
+            int tot = carry;
+            if(i < a.size()) tot += a[i] - '0';
+            if(i < b.size()) tot += b[i] - '0';
+            
+            sum += to_string(tot % 2);
+            carry = tot / 2;
         }
-        while(i < a.size()) {
-            int tmp = carry + a[i]-'0';
-            carry = tmp/2;
-            stringstream ss;
-            ss << tmp%2;
-            c += ss.str();
-            i++;
+        if(carry) {
+            sum += to_string(carry);
         }
-        while(i < b.size()) {
-            int tmp = carry +b[i]-'0';
-            carry = tmp/2;
-            stringstream ss;
-            ss << tmp%2;
-            c += ss.str();
-            i++;
-        }
-        if(carry){
-            c += "1";
-        }
-        reverse(c.begin(), c.end());
-        return c;
+        
+        reverse(sum.begin(), sum.end());
+        return sum;
     }
 };
