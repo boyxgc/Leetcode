@@ -1,4 +1,4 @@
-class Solution {
+/*class Solution {
 public:
     vector<vector<string> > res;
     //vector<bool> rows;
@@ -41,5 +41,36 @@ public:
         }
         solve(0, n);
         return res;
+    }
+};*/
+class Solution {
+public:
+    vector<vector<string> > solveNQueens(int n) {
+        string s(n, '.');
+        vector<string> board(n, s);
+        vector<vector<string> > res;
+        
+        solve(board, 0, 0, 0, 0, res);
+        
+        return res;
+    }
+    
+private:
+    void solve(vector<string> &board, int row, int col, int diagl, int diagr, vector<vector<string> > &res) {
+        if(row == board.size()) {
+            vector<string> copy(board);
+            res.push_back(copy);
+            return;
+        }
+        
+        int available = ~(col | diagl | diagr);
+        for(int i = 0; i < board.size(); ++i) {
+            int pos = 1 << i;
+            if( pos & available) {
+                board[row][i] = 'Q';
+                solve(board, row + 1, col | pos, (diagl | pos) >> 1, (diagr | pos) << 1, res);
+                board[row][i] = '.';
+            }
+        }
     }
 };
