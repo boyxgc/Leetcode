@@ -11,20 +11,21 @@ The solution is guaranteed to be unique.
 class Solution {
 public:
     int canCompleteCircuit(vector<int> &gas, vector<int> &cost) {
-        int N = gas.size();
-        int i = 0; 
-        int gasleft = 0;
+        
+        int st_num = gas.size();
         int st = 0;
-        while(st < N) {
-            gasleft += gas[i]-cost[i];
-            if(gasleft < 0){
-                st = max(st+1, i+1);//!! st only go one round, orginal fault: st = i+1;
-                gasleft = 0;
-            } else {
-                if((i+1)%N == st)
-                    return st;
+        while(st < st_num) {
+            int have = gas[st];
+            int need = cost[st];
+            int go = st;
+            while(have >= need) {
+                if(go != st && go %(st_num) == st) return st;
+                
+                have = have - cost[go%st_num] + gas[(go+1)%st_num];
+                need = cost[(go+1)%st_num];
+                go++;
             }
-            i = (i+1)%N;
+            st = go + 1;
         }
         return -1;
     }
