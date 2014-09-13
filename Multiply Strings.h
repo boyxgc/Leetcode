@@ -1,97 +1,91 @@
 class Solution {
 public:
-    
-    int char2int(char c) {
-        return (int)(c-'0');
-    }
-    string int2str(int i) {
-        return to_string(i);
-    }
-    string addstr(string num1, string num2) {
-        if(num1.size() > num2.size()){
-            string tmp = num1;
-            num1 = num2;
-            num2 = tmp;
-        }
-        //cout << "=>" << num1 << " " << num2 << "<=" << endl;
-        //num1 size <= num2 size
-        string ret = "";
-        int delta = num2.size() - num1.size();
-        int carry = 0;
-        int i;
-        for(i = num1.size()-1; i >= 0; --i) {
-            int tmpsum = char2int(num1[i])+char2int(num2[i+delta])+carry;
-            if(tmpsum > 9){
-                carry = 1;
-                tmpsum -= 10;
-            }else {
-                carry = 0;
-            }
-            ret = int2str(tmpsum)+ret;
-        }
-        for(int j = i+delta; j >= 0; --j) {
-            int tmpsum = char2int(num2[j])+carry;
-            if(tmpsum > 9){
-                carry = 1;
-                tmpsum -= 10;
-            }else {
-                carry = 0;
-            }
-            ret = int2str(tmpsum)+ret;
-        }
-        if(carry)
-            ret = "1" +ret;
-        return ret;
-    }
-
-    string multstr(string num1, char c) {
-     	int carry = 0;
-     	string tmp="";
-        for(int j = num1.size()-1; j >= 0; --j) {
-            int tmpmul = char2int(num1[j]) * char2int(c) + carry;
-            if(tmpmul > 9) {
-                carry = tmpmul/10;
-                tmpmul = tmpmul%10;
-            } else{
-                carry = 0;
-            }
-            tmp = int2str(tmpmul)+tmp;
-        }
-        if(carry) {
-            tmp = to_string(carry)+tmp;
-        }
-        return tmp;
-    }
-        
     string multiply(string num1, string num2) {
-        if(num1 == "0" || num2 == "0")
-            return "0";
+        string multiplier;
+        string multiplicand;
         
         if(num1.size() > num2.size()) {
-        	string tmp = num1;
-        	num1 = num2;
-        	num2 = tmp;
+            multiplier = num1;
+            multiplicand = num2;
+        } else {
+            multiplier = num2;
+            multiplicand = num1;
         }
-        map<char, string> hash;
         
+        vector<string> cache(10, "");
+
         string res = "0";
         string zeros = "";
-        for(int i = num2.size()-1; i >= 0 ; --i) {
-            string tmp = "";
-            if(hash.find(num2[i]) != hash.end()) {
-                tmp = hash[num2[i]];
+        for(int i = multiplier.size()-1; i >= 0; --i) {
+            int digit = toDigit(multiplier[i]);
+            string tmp;
+            if(cache[digit] == "") {
+                tmp = multiplyWithOneDigit(multiplicand, digit);
+                cache[digit] = tmp;
             } else {
-                tmp = multstr(num1, num2[i]);
-                hash[num2[i]] = tmp;
+                tmp = cache[digit];
             }
-
-            tmp = tmp+zeros;
-            zeros = zeros + "0";
-            //cout << tmp << " -> ";
-            res = addstr(res, tmp);
-            //cout << res << endl;
+            
+            if(tmp != "0") tmp += zeros;
+            res = addStr(res, tmp);
+            zeros += "0";
         }
         return res;
     }
-
+    
+    string multiplyWithOneDigit(string str, int num) {
+        if(num == 0) return "0";
+        if(num == 1) return str;
+        
+        reverse(str.begin(), str.end());
+        string res = "";
+        int carry = 0;
+        for(int i = 0; i < str.size(); ++i) {
+            int curr = toDigit(str[i]);
+            int tot = curr * num + carry;
+            
+            res += to_string(tot%10);
+            carry = tot/10;
+        }
+        if(carry) {
+            res += to_string(carry);
+        }
+        
+        reverse(res.begin(), res.end());
+        return res;
+    }
+    
+    string addStr(string num1, string num2) {
+        reverse(num1.begin(), num1.end());
+        reverse(num2.begin(), num2.end());
+        
+        string sum = "";
+        
+        int p1 = 0, p2 = 0;
+        int carry = 0;
+        while(p1 < num1.size() || p2 < num2.size()) {
+            int tmp = carry;
+            if(p1 < num1.size()) {
+                tmp += toDigit(num1[p1]);
+                p1++;
+            }
+            if(p2 < num2.size()) {
+                tmp += toDigit(num2[p2]);
+                p2++;
+            }
+            
+            sum += to_string(tmp%10);
+            carry = tmp/10;
+        }
+        if(carry) {
+            sum += to_string(carry);
+        }
+        
+        reverse(sum.begin(), sum.end());
+        return sum;
+    }
+    
+    int toDigit(char c) {
+        return c - '0';
+    }
 };
