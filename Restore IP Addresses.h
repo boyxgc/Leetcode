@@ -33,3 +33,44 @@ public:
     }
     
 };
+
+class Solution {
+public:
+    vector<string> restoreIpAddresses(string s) {
+        
+        return restore(s, 4);
+    }
+    
+    vector<string> restore(string s, int parts) {
+        vector<string> res;
+        if(s.size() > 3*parts || s.size() < parts) return res;
+
+        if(parts == 1) {
+            int i = atoi((char *)s.c_str());
+            if(i < 256 && !(s.size()>1 && s[0] == '0')) {
+                res.push_back(s);
+            }
+            return res;
+        }
+        
+        if(s[0] == '0') {
+            vector<string> v = restore(s.substr(1), parts-1);
+            for(int j = 0; j < v.size(); ++j) {
+                res.push_back("0."+v[j]);
+            }
+            return res;
+        }
+        
+        for(int i = 1; i < 4 && i <= s.size(); ++i) {
+            string str = s.substr(0, i);
+            int num = atoi((char *)str.c_str());
+            if(num < 256) {
+                vector<string> v = restore(s.substr(i), parts-1);
+                for(int j = 0; j < v.size(); ++j) {
+                    res.push_back(str+"."+v[j]);
+                }
+            }
+        }
+        return res;
+    }
+};
