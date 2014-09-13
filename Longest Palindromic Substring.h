@@ -1,31 +1,24 @@
 class Solution {
 public:
-    string expandpal(int i, int j, string s){
-        while(i >=0 && j< s.size()){
-            if(s[i] != s[j]) break;
-            i--; 
+    string longestPalindrome(string s) {
+        if(s.size() < 2) return s;
+        
+        string longest = "";
+        for(int i = 0; i < s.size() - 1; ++i) {
+            string expa = expand(s, i, i);
+            if(expa.size() > longest.size()) longest = expa;
+            string expa2 = expand(s, i, i+1);
+            if(expa2.size() > longest.size()) longest = expa2;
+        }
+        
+        return longest;
+    }
+    
+    string expand(string s, int i, int j) {
+        while(i >= 0 && j < s.size() && s[i] == s[j]) {
+            i--;
             j++;
         }
-        i++;
-        j--;
-        if(j >= i)
-            return s.substr(i, j-i+1);
-        else 
-            return "";
-    }
-    string longestPalindrome(string s) {
-        if(s == "") return "";
-        string ret = s.substr(0,1);
-        
-        for(int i = 0; i < s.size(); ++i){
-            string pal1 = expandpal(i, i, s);
-            string pal2 = expandpal(i, i+1, s);
-            
-            if(pal1.length() > ret.length())
-                ret = pal1;
-            if(pal2.length() > ret.length())
-                ret = pal2;
-        }
-        return ret;
+        return s.substr(i+1, j-i-1);
     }
 };
