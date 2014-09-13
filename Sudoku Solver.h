@@ -1,75 +1,51 @@
 class Solution {
 public:
-    vector<long long> bm_row;
-    vector<long long> bm_col;
-    vector<long long> bm_squ;
-    
-    bool solver(vector<vector<char> > &board, int i, int j) {
-        int size = board.size();
-        if(i >= size || j >= size){
-            return true;
-        }
-            
-        if(board[i][j] != '.'){
-            if(j+1 >= size){
-                j = 0;
-                i++;
-            } else{
-                j++;
-            }
-            return solver(board, i, j);
-        } else {
-            bool flag = false;
-            for(char num = '1'; num <= '9'; ++num){
-                int tmpbm = 1 << (num-'0');
-                if((tmpbm & bm_row[i]) || (tmpbm & bm_col[j])|| (tmpbm & bm_squ[(i/3)*3+j/3]))
-                    continue;
-                flag = true;
-                board[i][j] = num;
-                bm_row[i] = bm_row[i] | tmpbm;
-                bm_col[j] = bm_col[j] | tmpbm;
-                bm_squ[(i/3)*3+j/3] = bm_squ[(i/3)*3+j/3] | tmpbm;
-                int new_i = i;
-                int new_j = j;
-                if(new_j+1 >= size){
-                    new_j = 0;
-                    new_i++;
-                } else{
-                    new_j++;
-                }
-                bool succeed = solver(board, new_i, new_j);
-                if(succeed)
-                    return true;
-                board[i][j] = '.';
-                bm_row[i] = bm_row[i] &(~tmpbm);
-                bm_col[j] = bm_col[j] &(~tmpbm);
-                bm_squ[(i/3)*3+j/3] = bm_squ[(i/3)*3+j/3] &(~tmpbm);
-            }
-            if(!flag)
-                return false;
-        }
-    }
-
     void solveSudoku(vector<vector<char> > &board) {
-        int size = board.size();
-        if(size == 0)
-            return;
-    
-        bm_row = vector<long long>(9,0);
-        bm_col = vector<long long>(9,0);
-        bm_squ = vector<long long>(9,0);
+        int n = board.size();
+        vector<int> bitmap_row(n+1, 0);
+        vector<int> bitmap_col(n+1, 0);
+        vector<int> bitmap_squ(n+1, 0);
         
-        for(int i = 0; i < size; ++i) {
-            for(int j = 0; j < size; ++j) {
-                if(board[i][j] == '.')
-                    continue;
-                int num = board[i][j] - '0';
-                bm_row[i] = bm_row[i] | (1<<num);
-                bm_col[j] = bm_col[j] | (1<<num);
-                bm_squ[(i/3)*3+j/3] = bm_squ[(i/3)*3+j/3] | (1<<num);
+        for(int i = 0; i < n; ++i) {
+            for(int j = 0; j < n; ++j) {
+                char c = board[i][j];
+                if(isdigit(c)) {
+                    int num = c - '0';
+                    bitmap_row[i] |= 1 << num;
+                    bitmap_col[j] |= 1 << num;
+                    bitmap_squ[(i/3) * 3+j/3] |= 1 << num;
+                }
             }
         }
-        solver(board, 0, 0);
+        
+        solve(board, 0, 0, bitmap_row, bitmap_col, bitmap_squ);
         return;
+    }
+    
+    bool solve(vector<vector<char> > &board, int i, int j, vector<int> &bm_row, vector<int> &bm_col, vector<int> &bm_squ) {
+        if(i == board.size()) return true;
+        if(j >= board.size()) return solve(board, i+1, 0, bm_row, bm_col, bm_squ);
+        
+        if(board[i][j] != '.') return solve(board, i, j+1, bm_row, bm_col, bm_squ);
+        
+        for(int num = 1; num < 10; ++num) {
+            int pos = 1 << num;
+            int available = ~(bm_row[i] | bm_col[j] | bm_squ[(i/3) * 3+j/3]);
+            if(pos & available){
+                board[i][j] =  '0'+num;
+                bm_row[i] |= pos;
+                bm_col[j] |= pos;
+                bm_squ[(i/3) * 3+j/3] |= pos;
+                
+                if(solve(board, i, j+1, bm_row, bm_col, bm_squ)) return true;
+                
+                board[i][j] =  '.';
+                bm_row[i] &= ~pos;
+                bm_col[j] &= ~pos;
+                bm_squ[(i/3) * 3+j/3] &= ~pos;
+            }
+        }
+        
+        return false;
     }
 };
