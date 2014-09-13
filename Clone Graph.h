@@ -79,3 +79,38 @@ public:
         return nodecopy;
     }
 };
+
+/**
+ * Definition for undirected graph.
+ * struct UndirectedGraphNode {
+ *     int label;
+ *     vector<UndirectedGraphNode *> neighbors;
+ *     UndirectedGraphNode(int x) : label(x) {};
+ * };
+ */
+class Solution {
+public:
+    UndirectedGraphNode *cloneGraph(UndirectedGraphNode *node) {
+        unordered_map<UndirectedGraphNode*, UndirectedGraphNode*> cache;
+        
+        return clone(node, cache);
+    }
+    
+    UndirectedGraphNode *clone(UndirectedGraphNode *node, unordered_map<UndirectedGraphNode*, UndirectedGraphNode*> &cache) {
+        if(!node) return NULL;
+        
+        if(cache.find(node) != cache.end()) {
+            return cache[node];
+        }
+        
+        UndirectedGraphNode *cpy = new UndirectedGraphNode(node->label);
+        cache[node] = cpy;
+        vector<UndirectedGraphNode *> neigh;
+        for(int i = 0; i < node->neighbors.size(); ++i) {
+            neigh.push_back(clone(node->neighbors[i], cache));
+        }
+        cpy->neighbors = neigh;
+        
+        return cpy;
+    }
+};
