@@ -1,23 +1,22 @@
 class Solution {
 public:
     int lengthOfLongestSubstring(string s) {
-        if(s == "") return 0;
+        if(s.empty()) return 0;
+        vector<int> lastShow(256, -1);
         
-        vector<int> lss(s.size(), 1);
-        int lastshow[26];// track each alphabet's last show
-        memset(lastshow, -1, 26*sizeof(int));
-        
-        lastshow[s[0]-'a'] = 0;
-        int maxsofar = 1;
+        lastShow[s[0]] = 0;
+        int max = 1;
+        int prevLongest = 1;
         for(int i = 1; i < s.size(); ++i) {
-        
-            lss[i] = min(i-lastshow[s[i]-'a'], lss[i-1]+1);// reccur function
-            lastshow[s[i]-'a'] = i;
+            int currLongest = min(i - lastShow[s[i]], prevLongest+1);
             
-            if(lss[i] > maxsofar){
-                maxsofar = lss[i];
+            if(currLongest > max) {
+                max = currLongest;
             }
+            prevLongest = currLongest;
+            lastShow[s[i]] = i;
         }
-        return maxsofar;
+        
+        return max;
     }
 };
