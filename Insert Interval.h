@@ -9,34 +9,30 @@
  */
 class Solution {
 public:
-    static bool compare(const Interval &p1, const Interval &p2) {
-        return p1.start < p2.start;
-    }
-    vector<Interval> merge(vector<Interval> &intervals) {
-        vector<Interval> res;
-        int size = intervals.size();
-        if(size == 0)
-            return res;
-        std::sort(intervals.begin(), intervals.end(), compare);
-        int pos = 0;
-        while(pos < size) {
-            int tmppos = pos+1;
-            int tmpstart = intervals[pos].start;
-            int tmpend = intervals[pos].end;
-            while(tmppos < size && intervals[tmppos].start <= tmpend){
-                tmpend = max(intervals[tmppos].end, tmpend);
-                tmppos++;
-            }
-            Interval intv(tmpstart, tmpend);
-            res.push_back(intv);
-            pos = tmppos;
-        }
-        return res;
-    }
     vector<Interval> insert(vector<Interval> &intervals, Interval newInterval) {
-        vector<Interval> res;
-        intervals.push_back(newInterval);
-        res = merge(intervals);
-        return res;
+        vector<Interval> merged;
+        
+        bool isInserted = false;
+        for(int i = 0; i < intervals.size(); ++i) {
+            Interval intv = intervals[i];
+            if(isOverlapped(newInterval, intv)) {
+                newInterval.start = min(newInterval.start, intv.start);
+                newInterval.end = max(newInterval.end, intv.end);
+            } else {
+                if(!isInserted && intv.start > newInterval.end) {
+                    merged.push_back(newInterval);   
+                    isInserted = true;
+                }
+                merged.push_back(intv);
+            }
+        }
+        
+        if(!isInserted) merged.push_back(newInterval);
+        
+        return merged;
+    }
+    
+    bool isOverlapped(Interval & i1, Interval & i2) {
+        return !((i1.end < i2.start) || (i2.end < i1.start));
     }
 };
