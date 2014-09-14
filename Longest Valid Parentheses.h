@@ -1,5 +1,43 @@
 class Solution {
 public:
+    struct Cell {
+        char c;
+        int idx;
+        Cell(char ch, int i){c = ch; idx = i;}
+    };
+
+    int longestValidParentheses(string s) {
+        stack<Cell> st;
+        
+        int longest = 0;
+        for(int i = 0; i < s.size(); ++i) {
+            char c = s[i];
+            if(c == '(') {
+                Cell cell(c, i);
+                st.push(cell);
+            } else if(c == ')') {
+                if(!st.empty() && st.top().c == '(') {
+                    st.pop();
+                    int len;
+                    if(st.empty()) {
+                        len = i+1;
+                    } else {
+                        len = i-st.top().idx;
+                    }
+                    longest = max(longest, len);
+                } else {
+                    Cell cell(c, i);
+                    st.push(cell);
+                }
+            }
+        }
+        
+        return longest;
+    }
+};
+
+class Solution {
+public:
     /*
     struct Node {
         char c;
@@ -34,6 +72,7 @@ public:
         }
         return maxsofar;
     } */
+
     int longestValidParentheses(string s) {
         if(s == "") return 0;
         stack<pair<char, int>> st;
