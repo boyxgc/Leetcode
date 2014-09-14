@@ -11,40 +11,43 @@ public:
     ListNode *sortList(ListNode *head) {
         if(!head || !head->next) return head;
         
-        ListNode *p = head, *q = head;
-        while(q->next && q->next->next){
-            p = p->next;
-            q = q->next->next;
+        ListNode *p1 = head;
+        ListNode *p2 = head;
+        
+        while(p2 && p2->next && p2->next->next) {
+            p1 = p1->next;
+            p2 = p2->next->next;
         }
-        // p is the mid of list,
-        ListNode *tmp = p->next;
-        p->next = NULL;// cut into halvies
-        ListNode *firsthalf = sortList(head);
-        ListNode *secondhalf = sortList(tmp);
+        
+        p2 = p1->next;
+        p1->next = NULL;
+        
+        p1 = sortList(head);
+        p2 = sortList(p2);
         
         ListNode *newhead = new ListNode(0);
-        ListNode *pos = newhead;
-        
-        while(firsthalf && secondhalf){
-            if(firsthalf->val < secondhalf->val){
-                pos->next = firsthalf;
-                firsthalf = firsthalf->next;
+        ListNode *p = newhead;
+        while(p1 || p2) {
+            if(p1 && p2) {
+                if(p1->val < p2->val) {
+                    p->next = p1;
+                    p1 = p1->next;
+                } else {
+                    p->next = p2;
+                    p2 = p2->next;
+                }
             } else {
-                pos->next = secondhalf;
-                secondhalf = secondhalf->next;
+                if(p1) {
+                    p->next = p1;
+                    p1 = p1->next;
+                } else {
+                    p->next = p2;
+                    p2 = p2->next;
+                }
             }
-            pos = pos->next;
+            p = p->next;
         }
-        while(firsthalf){
-            pos->next = firsthalf;
-            firsthalf = firsthalf->next;
-            pos = pos->next;
-        }
-        while(secondhalf){
-            pos->next = secondhalf;
-            secondhalf = secondhalf->next;
-            pos = pos->next;
-        }
+        
         return newhead->next;
     }
 };
