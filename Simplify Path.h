@@ -1,42 +1,44 @@
 class Solution {
 public:
     string simplifyPath(string path) {
-    	if(path == "")
-    		return "";
-    
-        int size = path.size();
-        char * pathch = new char[size+1];
-        pathch = strcpy(pathch, path.c_str());
+        char *chars = new char[path.size()+1];
+        strncpy(chars, path.c_str(), path.size());
+        chars[path.size()] = '\0';
         
-        string ret = "";
-        if(path[0] == '/'){
-            ret = ret+"/";
+        string s;
+        if(path[0] == '/') {
+            s += '/';
         }
         
-        char * part;
-        part = strtok(pathch, "/");
+        char *part = strtok(chars, "/");
         while(part) {
-        	//cout << part << endl;
-            if(strcmp(part, "..") == 0) {
-                int pos = ret.size()-1;
-                if(pos > 0){
-                    ret.erase(pos, 1);// erase last '/'
-                    pos--;
-                }
-                while(pos > 0 && ret[pos] != '/'){
-                    ret.erase(pos, 1);
-                    pos--;
-                }
-            } else if (strcmp(part, ".") != 0){
-                ret = ret + (string)part + "/";
+            if(equals(part, "..")) {
+                do {
+                    if(s.size() == 1) {
+                        if(s[0] == '/') {
+                            break;
+                        } else {
+                            s = ".";
+                            break;
+                        }
+                    }
+                    s.pop_back();
+                }while(s.back() != '/') ;
+            } else if(!equals(part, ".")) {
+                string str(part);
+                s += str + "/";
             }
+            
             part = strtok(NULL, "/");
         }
-    
-        if(ret.size() > 1 && ret[ret.size()-1] == '/'){
-        	ret.erase(ret.size()-1, 1);
+        
+        if(s.size() > 1 && s.back() == '/'){
+            s.pop_back();
         }
-        return ret;
+        return s;
     }
-
+    
+    bool equals(char *s, const char *t) {
+        return strcmp(s, t) == 0;
+    }
 };
