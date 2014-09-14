@@ -18,7 +18,7 @@ public:
                         if(s[0] == '/') {
                             break;
                         } else {
-                            s = ".";
+                            s = "./";
                             break;
                         }
                     }
