@@ -1,57 +1,56 @@
 class Solution {
 public:
     vector<string> fullJustify(vector<string> &words, int L) {
-        //step 1: assign each word its level
-        //step 2: calculate blanks
-        //step 3: output
-        vector<string> ret;
-        if(L == 0){
-            ret.push_back("");
-            return ret;
-        }
-        int pos = 0;
-        while(pos < words.size()) {
-            int orgpos = pos;
-            int len = words[pos].size();
-            int orglen = len;
-            while(len < L && pos+1 < words.size()){// find words in this bracket
-                pos++;
-                orglen = len;
-                len += 1 + words[pos].size();
-            }
-            if(len > L){
-                len = orglen;
-                pos--;
-            }
-            // now words from orgpos to pos(both bound included) are in the same bracket
-            string str = "";
-            int extraWs = L-len;
-            if(pos < words.size()-1){// not sentence end
-                if(pos == orgpos){// only one word
-                    str = words[pos];
-                    str.append(extraWs,' ');
-                } else {// multiple words
-                    int avgWs = extraWs/(pos-orgpos);
-                    int leftWs = extraWs - avgWs*(pos-orgpos);
+        vector<string> res;
+        
+        vector<string> words2put;
+        int charscount = 0;
+        for(int i = 0; i < words.size();++i) {
+            string word = words[i];
+            int wordsn = words2put.size();
+            int tmp = charscount + wordsn/*spaces*/ + word.size();
+            if(tmp > L) {
+                int spaces = L - charscount;
+                
+                if(wordsn == 1) {
+                    words2put[0] += string(spaces, ' ');
+                } else {
+                    int average = spaces/(wordsn-1);
+                    int remain = spaces%(wordsn-1);
                     
-                    str =words[orgpos];
-                    for(int i = orgpos+1; i <= pos; ++i){
-                        if(leftWs-- > 0){
-                            str.append(" ");
-                        }
-                        str.append(avgWs, ' ');
-                        str.append(" "+words[i]);
+                    for(int j = 0; j < wordsn-1; ++j) {
+                        words2put[j] += string (average, ' ');
+                        if(j < remain) words2put[j] += ' ';
                     }
                 }
-            } else {//sentence end
-                str =words[orgpos];
-                for(int i = orgpos+1; i <= pos; ++i){
-                    str += " "+words[i];
+                string tmpstr = "";
+                for(int j = 0; j < wordsn; ++j) {
+                    tmpstr += words2put[j];
                 }
-                str.append(extraWs,' ');
+                
+                res.push_back(tmpstr);
+                
+                words2put.clear();
+                charscount = 0;
+                i--;
+            } else {
+                charscount += word.size();
+                words2put.push_back(word);
+                
+                if(i == words.size()-1) { // last line
+                    string tmpstr = "";
+                    for(int j = 0; j < words2put.size(); ++j) {
+                        tmpstr += words2put[j];
+                        if(j < words2put.size()-1) {
+                            tmpstr += ' ';
+                        }
+                    }
+                    tmpstr += string(L-tmpstr.size(), ' ');
+                    res.push_back(tmpstr);
+                }
             }
-            pos++;
-            ret.push_back(str);
         }
+        
+        return res;
     }
 };
