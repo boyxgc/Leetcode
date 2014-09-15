@@ -1,35 +1,25 @@
 class Solution {
 public:
     int numDecodings(string s) {
-        if(s.length() <= 0)
-            return 0;
-        vector<int> v(s.size(), 0);
         
-        if(s[0] == '0')
-            return 0;
-        v[0] = 1;
-        for(int i = 1; i < s.size(); ++i) {
-            int two = (s[i-1]-'0')*10+(s[i]-'0');
-            if(two <= 26 && two >= 10) {
-                if(s[i] != '0')
-                    v[i] = v[i-1];
-                
-                if(i-2 < 0){
-                    v[i] += 1;
-                } else {
-                    v[i] += v[i-2];
-                }
-            } else if(two == 0){
-                return 0;
-            }else{
-                
-                if(s[i] == '0') {
-                    v[i] = 0;
-                } else {
-                    v[i] = v[i-1];
+        int size = s.size();
+        if(size == 0) return 0;
+        
+        vector<int> decos(size, 0);
+        
+        decos[0] = s[0] != '0';
+        for(int i = 1; i < size; ++i) {
+            int way1 = (s[i] != '0') * decos[i-1];
+            int way2 = 0;
+            if(s[i-1] > '0' && s[i-1] < '3') {
+                if(s[i-1] != '2' || s[i] <= '6'){
+                    if(i-2 >= 0) way2 = decos[i-2];
+                    else way2 = 1;
                 }
             }
+            decos[i] = way1 + way2;
         }
-        return v[s.size()-1];
+        
+        return decos[size-1];
     }
 };
