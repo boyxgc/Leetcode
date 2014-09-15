@@ -9,44 +9,49 @@
  */
 class Solution {
 public:
-    bool same(const Point &p1, const Point &p2){
-        return p1.x==p2.x && p1.y==p2.y;
-    }
     int maxPoints(vector<Point> &points) {
-        if(points.size() == 0) return 0;
-        int maxsofar = 1;
-        vector<double> slopes;
+        if(points.size() <  3) return points.size();
         
-        for(int i = 0; i < points.size(); ++i){
-            slopes.clear();
+        int maxnum = 1;
+        for(int i = 0; i < points.size(); ++i) {
+            vector<double> slopes;
             int dups = 1;
-            for(int j = 0; j < points.size(); ++j){
+            int v_points = 0;
+            for(int j = 0; j < points.size(); ++j) {
                 if(i == j) continue;
-                
-                Point p1 = points[i];
-                Point p2 = points[j];
-                if(same(p1, p2)){
+                Point & p1 = points[i];
+                Point & p2 = points[j];
+                if(p1.x == p2.x && p1.y == p2.y) {
                     dups++;
-                    continue;
-                }
-                if(p1.x != p2.x){
-                    slopes.push_back((p1.y-p2.y)*1.0/(p1.x-p2.x));
                 } else {
-                    slopes.push_back(12345.6789);
+                    if(p1.x == p2.x) {
+                        v_points++;
+                    } else {
+                        slopes.push_back((p1.y-p2.y)*1.0/(p1.x-p2.x));
+                    }
                 }
             }
-            sort(slopes.begin(), slopes.end());
-            
-            int tmpmax = (slopes.size() > 0) ? 1 : 0;
-            maxsofar = max(maxsofar, dups+tmpmax);
-            for(int i = 1; i < slopes.size(); ++i){
-                if(slopes[i] == slopes[i-1])
-                    tmpmax++;
-                else
-                    tmpmax = 1;
-                maxsofar = max(maxsofar, tmpmax+dups);
+            int currmax = v_points;
+            if(!slopes.empty()) {
+                sort(slopes.begin(), slopes.end());
+                int count = 1;
+                for(int i = 1; i < slopes.size(); ++i) {
+                    if(equals(slopes[i],slopes[i-1])) {
+                        count++;
+                    } else {
+                        currmax = max(currmax, count);
+                        count = 1;
+                    }
+                }
+                currmax = max(currmax, count);
             }
+            maxnum = max(maxnum, currmax + dups);
         }
-        return maxsofar;
+        
+        return maxnum;
+    }
+    
+    double equals(double d1, double d2) {
+        return (abs(d1-d2) < 0.000001);
     }
 };
