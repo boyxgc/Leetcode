@@ -1,6 +1,67 @@
 class Solution {
 public:
     bool isNumber(const char *s) {
+        const char *dot = NULL;
+        const char *e = NULL;
+        
+        while(*s == ' ') s++;
+        
+        // first ch could be : '+', '-', '.'
+        if(!isdigit(*s)) {
+            if(*s == '.') {
+                dot = s;
+            } else if(*s != '+' && *s != '-') {
+                return false;
+            }
+            s++;
+        }
+        
+        // first ch could be : '.'
+        if(*s == '.') {
+            if(!dot) {
+                dot = s;
+                s++;
+            } else {
+                return false;
+            }
+        }
+        
+        // has to proceed with a digit
+        if(!isdigit(*s)) return false;
+        
+        while(*s) {
+            if(!isdigit(*s)) {
+                if(*s == '.') {
+                    if(dot || e) {
+                        return false;
+                    } else {
+                        dot = s;
+                    }
+                } else if(*s == 'e') {
+                    if(e) {
+                        return false;
+                    } else {
+                        e = s;
+                        if(!isdigit(*(s+1)) && !isdigit(*(s+2))) return false;
+                    }
+                } else if(*s == '+' || *s == '-') {
+                    if(*(s-1) != 'e') return false;
+                } else if(*s == ' ') {
+                    while(*s == ' ') s++;
+                    return *s == '\0';
+                } else {
+                    return false;
+                }
+            }
+            s++;
+        }
+        return true;
+    }
+};
+
+class Solution {
+public:
+    bool isNumber(const char *s) {
         if(!(*s)) return false;
         while(*s && *s == ' ') s++;
         if(*s == '-' || *s == '+') s++;
