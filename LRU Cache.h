@@ -1,74 +1,71 @@
 class LRUCache{
 public:
-    struct Node{
-        int key;
-        int val;
-        Node *prev;
-        Node *next;
-        Node():key(-1),val(-1),prev(NULL),next(NULL){}
-        Node(int k, int v):key(k), val(v), prev(NULL), next(NULL){}
-    };
-    
-    map<int, Node*> mmap; // key to node
-    int capacity;
-    Node *head;
-    Node *tail;
-    int size;
-    
     LRUCache(int capacity) {
-        this->capacity = capacity;
-        head = new Node();
-        tail = new Node();
+        head = new Cell();
+        tail = new Cell();
         head->next = tail;
         tail->prev = head;
+        
         size = 0;
+        capa = capacity;
     }
     
     int get(int key) {
-        if(mmap.find(key) == mmap.end())
+        if(map.find(key) == map.end()){
             return -1;
-        Node *node = mmap[key];
-        //del node from list
-        node->prev->next = node->next;
-        node->next->prev = node->prev;
-        //add node next to head
-        node->next = head->next;
-        head->next = node;
-        node->next->prev = node;
-        node->prev = head;
-        return node->val;
+        } else {
+            putAsHead(map[key]);
+            return map[key]->val;
+        }
     }
     
     void set(int key, int value) {
-        Node *node = NULL;
-        if(mmap.find(key) != mmap.end()){
-            //already exists
-            node = mmap[key];
-            node->val = value;
-            //del node from list
-            node->prev->next = node->next;
-            node->next->prev = node->prev;
-        } else {
-            //new node
-            node = new Node(key, value);
-            mmap[key] = node;
-            if(this->size < this->capacity){
-                this->size++;
-            } else {
-                //delete tail->prev
-                if(this->tail->prev != this->head){
-                    Node *tmp = tail->prev;
-                    tail->prev = tmp->prev;
-                    tmp->prev->next = tail;
-                    mmap.erase(tmp->key);// !!!!! del from map, original fault,didn't del
-                    delete tmp;
-                }
+        Cell * cell;
+        if(map.find(key) == map.end()) {
+            cell = new Cell(key, value);
+            map[key] = cell;
+            if(size == capa) {
+                Cell *tmp = tail->prev;
+                tail->prev = tmp->prev;
+                tail->prev->next = tail;
+                map.erase(tmp->key);
+                delete tmp;
+                size--;
             }
+            
+            size++;
+        } else {
+            cell = map[key];
+            cell->val = value;
         }
-        //add node next to head
-        node->next = head->next;
-        head->next = node;
-        node->next->prev = node;
-        node->prev = head;
+        putAsHead(cell);
+    }
+public:
+    struct Cell {
+        int key;
+        int val;
+        Cell* prev;
+        Cell* next;
+        
+        Cell(): prev(NULL), next(NULL) {}
+        Cell(int k, int v): key(k), val(v), prev(NULL), next(NULL) {}
+    };
+
+private:
+    Cell *head;
+    Cell *tail;
+    int size;
+    int capa;
+    unordered_map<int, Cell*> map;
+    
+    void putAsHead(Cell * cell) {
+        if(cell->prev && cell->next) {
+            cell->prev->next = cell->next;
+            cell->next->prev = cell->prev;
+        }
+        cell->next = head->next;
+        head->next = cell;
+        cell->next->prev = cell;
+        cell->prev = head;
     }
 };
