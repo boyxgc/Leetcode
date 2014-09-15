@@ -1,42 +1,37 @@
 class Solution {
 public:
     int atoi(const char *str) {
-        int i = 0;
-        bool pos = true;
+        const char *neg = NULL;
+        
+        while(*str == ' ') str++;
+        if(!isdigit(*str)) {
+            if(*str == '-'){
+                neg = str;
+            } else if(*str == '+') {
+                neg = NULL;
+            } else {
+                return 0;
+            }
+            str++;
+        }
+        
         int res = 0;
-        
-        while(str[i] == ' ') {i++;}
-        if(str[i] == '+') {
-            pos = true;
-            i++;
-        } else if (str[i] == '-') {
-            pos = false;
-            i++;
+        while(isdigit(*str)) {
+            char c = *str;
+            if(res > INT_MAX/10){
+                if(neg) return INT_MIN;
+                else return INT_MAX;
+            }
+            
+            if(res == INT_MAX/10) {
+                if(neg && c >= '8') return INT_MIN;
+                if(!neg && c >= 7) return INT_MAX;
+            }
+            
+            res = res*10 + c-'0';
+            str++;
         }
         
-        if(!isdigit(str[i])) {
-            return 0;
-        }
-        while(isdigit(str[i])) {
-            if(pos && res > INT_MAX/10){
-                return INT_MAX;
-            }
-            if(pos && res == INT_MAX/10 && str[i]-'0' > 7) {
-                return INT_MAX;
-            }
-            if(!pos && -res<INT_MIN/10){
-                return INT_MIN;
-            }
-            if(!pos && -res==INT_MIN/10 && str[i]-'0' > 8) {
-                return INT_MIN;
-            }
-            res = res*10 + int(str[i]-'0');
-            i++;
-        }
-        
-        if(pos)
-            return res;
-        else 
-            return -res;
+        return neg ? -res : res;
     }
 };
