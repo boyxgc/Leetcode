@@ -1,5 +1,44 @@
 class Solution {
 public:
+    int ladderLength(string start, string end, unordered_set<string> &dict) {
+        if(start == end || start.size() != end.size()) return 0;
+        
+        unordered_set<string> trans;
+        queue<string> q;
+        q.push(start);
+        trans.insert(start);
+        
+        int level = 1;
+        while(!q.empty()) {
+            level ++;
+            queue<string> q2;
+            while(!q.empty()) {
+                string front = q.front();
+                q.pop();
+                for(int i = 0; i < front.size(); ++i) {
+                    string top = front;
+                    for(char ch = 'a'; ch <= 'z'; ++ch) {
+                        top[i] = ch;
+                        if(trans.find(top) != trans.end()) continue;
+                        if(dict.find(top) == trans.end()) continue;
+                        if(top == end) {
+                            return level;
+                        }
+                        trans.insert(top);
+                        q2.push(top);
+                    }
+                }
+            }
+            q = q2;
+        }
+        
+        return 0;
+    }
+};
+
+// bi-direction BFS
+class Solution {
+public:
     struct Node {
       string word;
       int level;
