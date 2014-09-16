@@ -4,34 +4,33 @@
 #include <unordered_set>
 #include <vector>
 using namespace std;
-
+/*
 struct Node {
-    //string str;
-    vector<string> prevs;
-    //Node(): str(s) {}
+    string str;
+    vector<Node *> prevs;
+    Node(string s): str(s) {}
 };
-vector<vector<string> > backtrackPath(unordered_map<string, Node *>nodes, string str, unordered_map<string, vector<vector<string> > > &cache) {
-    if(cache.find(str) != cache.end()) {
-        return cache[str];
+vector<vector<Node *> > backtrackPath(Node *node, unordered_map<Node *, vector<vector<Node *> > > &cache) {
+    if(cache.find(node) != cache.end()) {
+        return cache[node];
     }
     
-    vector<vector<string> > res;
-    if(nodes[str] == NULL) {
-        vector<string> v;
-        v.push_back(str);
+    vector<vector<Node *> > res;
+    if(node->prevs.size() == 0) {
+        vector<Node *> v;
+        v.push_back(node);
         res.push_back(v);
     } else {
-        Node *node = nodes[str];
         for(int i = 0; i < node->prevs.size(); ++i) {
-            vector<vector<string> > v = backtrackPath(nodes, node->prevs[i], cache);
+            vector<vector<Node *> > v = backtrackPath(node->prevs[i], cache);
             for(int j = 0; j < v.size(); ++j) {
-                v[j].push_back(str);
+                v[j].push_back(node);
                 res.push_back(v[j]);
             }
         }
     }
     
-    cache[str] = res;
+    cache[node] = res;
     return res;
 }
 
@@ -41,7 +40,7 @@ vector<vector<string> > findLadders(string start, string end, unordered_set<stri
     unordered_map<string, Node *> nodes;
     bool found = false;
     
-    nodes[start] = NULL;
+    nodes[start] = new Node(start);
     q.push(start);
     dict.insert(end);// !!!!
     
@@ -62,13 +61,13 @@ vector<vector<string> > findLadders(string start, string end, unordered_set<stri
 
                     Node *wordNode;
                     if(nodes.find(tmp) == nodes.end()) {
-                        wordNode = new Node();//Node(tmp);
+                        wordNode = new Node(tmp);
                         nodes[tmp] = wordNode;
                     } else {
                         wordNode = nodes[tmp];
                     }
                     
-                    wordNode->prevs.push_back(word);
+                    wordNode->prevs.push_back(nodes[word]);
                     
                     if(tmp == end) {
                         found = true;
@@ -80,35 +79,103 @@ vector<vector<string> > findLadders(string start, string end, unordered_set<stri
         }
         if(found) {
             
-            unordered_map<string, vector<vector<string> > > cache;
-            return backtrackPath(nodes, end, cache);
+            unordered_map<Node *, vector<vector<Node *> > > cache;
+            vector<vector<Node *> >  nv = backtrackPath(nodes[end], cache);
+
+            for(int i = 0; i < nv.size(); ++i) {
+                vector<string> v;
+                for(int j = 0; j < nv[i].size(); ++j) {
+                    v.push_back(nv[i][j]->str);
+                }
+                res.push_back(v);
+            }
+            return res;
         }
         q = q2;
     }
     
     return res;
 }
+*/
+class Solution {
+public:
+    struct Node {
+        string str;
+        vector<string> prevs;
+        Node(string s): str(s) {}
+    };
+    vector<vector<string>> findLadders(string start, string end, unordered_set<string> &dict) {
+        vector<vector<string>> res;
+        unordered_set<string> q; 
+        unordered_set<string> q2;// use hashset to avoid duplicate access
+        unordered_map<string, Node *> nodes;
+        bool found = false;
+        
+        nodes[start] = NULL;
+        q.insert(start);
+        dict.insert(end);// !!!!
+        
+        while(!q.empty()) {
+            
+            for(auto it = q.begin(); it != q.end(); ++it) {
+                dict.erase(*it); // erase already used words
+            }
+            q2.clear();
+            for(auto it = q.begin(); it != q.end(); ++it) {
+                string word = *it;
+                
+                for(int i = 0; i < word.size(); ++i) {
+                    string tmp = word;
+                    for(int c = 'a'; c <= 'z'; ++c) {
+                        tmp[i] = c;
+                        if(dict.find(tmp) == dict.end()) continue; // if not in dict
 
-int main()
-{
-    unordered_set<string> dict;
-
-    dict.insert("hot");
-    dict.insert("dot");
-    dict.insert("dog");
-    dict.insert("lot");
-    dict.insert("log");
-
-    string start = "hit";
-    string end= "cog";
-
-    vector<vector<string> > v = findLadders(start, end, dict);
-
-    for(int i = 0; i  < v.size(); ++i) {
-        for(int j = 0; j < v[i].size(); ++j) {
-            cout << v[i][j] << " ";
+                        Node *wordNode;
+                        if(nodes.find(tmp) == nodes.end()) {
+                            wordNode = new Node(tmp);
+                            nodes[tmp] = wordNode;
+                        } else {
+                            wordNode = nodes[tmp];
+                        }
+                        
+                        wordNode->prevs.push_back(word);
+                        
+                        if(tmp == end) {
+                            found = true;
+                        } else {
+                            q2.insert(tmp);
+                        }
+                    }
+                }
+            }
+            if(found) {
+                vector<string> v;
+                v.push_back(end);
+                backtrackPath(nodes, end, v, res);
+                
+                return res;
+            }
+            q = q2;
         }
-        cout << endl;
+        
+        return res;
     }
-    return 0;
-}
+    
+    void backtrackPath(unordered_map<string, Node*> &nodes, string str, vector<string> &v, vector<vector<string> > &res) {
+        if(nodes[str] == NULL) {
+            vector<string> v_cpy(v);
+            reverse(v_cpy.begin(), v_cpy.end());
+            res.push_back(v_cpy);
+            return;
+        }
+        
+        Node *node = nodes[str];
+        
+        for(int i = 0; i < node->prevs.size(); ++i) {
+            string prev = node->prevs[i];
+            v.push_back(prev);
+            backtrackPath(nodes, prev, v, res);
+            v.pop_back();
+        }
+    }
+};
