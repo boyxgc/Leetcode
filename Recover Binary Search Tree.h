@@ -9,31 +9,27 @@
  */
 class Solution {
 public:
-    TreeNode *prev;
-    TreeNode *first;
-    TreeNode *second;
     
-    void inorderTraverse(TreeNode *root){
+    void inorderTraverse(TreeNode *root, TreeNode * &prev, TreeNode *&first, TreeNode *&second){
         if(!root)
             return;
-        inorderTraverse(root->left);
-        if(NULL == prev) {
-            prev = root;
-        }else{ 
+        inorderTraverse(root->left, prev, first, second);
+        if(prev) {
             if(prev->val > root->val){
                 if(first == NULL)
                     first = prev;
+                //else // canot put else here, case: 1, 3, 2, 4 
                 second = root;
             }
-            prev = root;
         }
-        inorderTraverse(root->right);
+        prev = root;
+        inorderTraverse(root->right, prev, first, second);
     }
     void recoverTree(TreeNode *root) {
-        prev = NULL;
-        first = NULL;
-        second = NULL;
-        inorderTraverse(root);
+        TreeNode *prev = NULL;
+        TreeNode *first = NULL;
+        TreeNode *second = NULL;
+        inorderTraverse(root, prev, first, second);
         int tmp = first->val;
         first->val = second->val;
         second->val = tmp;
