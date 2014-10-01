@@ -15,7 +15,7 @@ public:
         double product = 1.0;
         while(n--) {
             product *= x;
-            if(product == 0) break;
+            if(product == 0) return 0;
         }
         
         return isneg ? 1.0/product : product;

@@ -10,27 +10,23 @@ class Solution {
 public:
     ListNode *mergeTwoLists(ListNode *l1, ListNode *l2) {
         ListNode *head = new ListNode(0);
-       
-        ListNode *pos = head;
+        
+        ListNode *tmp = head;
         while(l1 && l2) {
             if(l1->val < l2->val) {
-                pos->next = l1;
+                tmp->next = l1;
                 l1 = l1->next;
-            }  else {
-                pos->next = l2;
+            } else {
+                tmp->next = l2;
                 l2 = l2->next;
             }
-            pos = pos->next;
+            tmp = tmp->next;
         }
-        while(l1) {
-            pos->next = l1;
-            l1 = l1->next;
-            pos = pos->next;
-        }
-        while(l2) {
-            pos->next = l2;
-            l2 = l2->next;
-            pos = pos->next;
+        
+        if(l1) {
+            tmp->next = l1;
+        } else {
+            tmp->next = l2;
         }
         
         return head->next;
