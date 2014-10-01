@@ -10,35 +10,17 @@
 class Solution {
 public:
     bool isSymmetric(TreeNode *root) {
-        if(!root) 
-            return true;
-        return DFS_preorder(root, root);// && DFS_midorder(root, root);
+        if(!root) return true;
         
+        return checkSym(root->left, root->right);
     }
     
-    bool DFS_preorder(TreeNode *root1, TreeNode *root2){
-        if(!root1 && !root2)
-            return true;
-        if(!root1 || !root2)
-            return false;
+private:
+    bool checkSym(TreeNode *r1, TreeNode *r2) {
+        if(!r1 && !r2) return true;
+        if(!r1 || !r2) return false;
+        if(r1->val != r2->val) return false;
         
-        if(root1->val != root2->val)
-            return false;
-        
-        return DFS_preorder(root1->left, root2->right) && DFS_preorder(root1->right, root2->left);
+        return checkSym(r1->left, r2->right) && checkSym(r1->right, r2->left);
     }
-    /*
-    bool DFS_midorder(TreeNode *root1, TreeNode *root2){
-        if(!root1 && !root2)
-            return true;
-        if(!root1 || !root2)
-            return false;
- 
-        bool flag1 = DFS_midorder(root1->left, root2->right);
-        if(root1->val != root2->val)
-            return false;
-        bool flag2 = DFS_midorder(root1->right, root2->left);
-        
-        return flag1 && flag2;
-    } */
 };
