@@ -10,36 +10,34 @@
 class Solution {
 public:
     vector<vector<int> > levelOrderBottom(TreeNode *root) {
-        vector<vector<int> >res;
-        if(!root)
-            return res;
+        vector<vector<int> > res;
+        
+        if(!root) return res;
+        
+        vector<TreeNode *> level;
+        level.push_back(root);
+        
+        while(!level.empty()) {
+            vector<int> intv;
+            vector<TreeNode *> nodev;
             
-        vector<vector<TreeNode*> >nodev;
-        vector<TreeNode*> v;
-        
-        v.push_back(root);
-        nodev.push_back(v);
-        
-        vector<TreeNode*> *tmpv = &v;
-        while(tmpv && tmpv->size() > 0) {
-            vector<TreeNode*>::const_iterator it;
-            vector<TreeNode*> *tmpv2 = new vector<TreeNode*>();//vector<TreeNode*> tmpv2;//new
-            for(it = tmpv->begin(); it != tmpv->end(); ++it) {
-                if((*it)->left) tmpv2->push_back((*it)->left);
-                if((*it)->right) tmpv2->push_back((*it)->right);
+            for(int i = 0; i < level.size(); ++i) {
+                TreeNode *node = level[i];
+                intv.push_back(node->val);
+                
+                if(node->left) {
+                    nodev.push_back(node->left);
+                }
+                if(node->right){
+                    nodev.push_back(node->right);
+                }
             }
-            tmpv = tmpv2;
-            if(tmpv2->size() > 0)
-                nodev.push_back(*tmpv2);
+            res.push_back(intv);
+            level = nodev;
         }
         
-        for(int i = nodev.size()-1; i >= 0; i--) {
-            vector<int> tmpv3;
-            for(int j = 0; j < nodev[i].size(); ++j) {
-                tmpv3.push_back((nodev[i][j])->val);
-            }
-            res.push_back(tmpv3);
-        }
+        reverse(res.begin(), res.end());
+        
         return res;
     }
 };
