@@ -188,26 +188,21 @@ vector<vector<string> > findLadders(string start, string end, unordered_set<stri
 */
 class Solution {
 public:
-    struct Node {
-        string str;
-        vector<string> prevs;
-        Node(string s): str(s) {}
-    };
     vector<vector<string>> findLadders(string start, string end, unordered_set<string> &dict) {
         vector<vector<string>> res;
-        unordered_set<string> q; 
-        unordered_set<string> q2;// use hashset to avoid duplicate access
-        unordered_map<string, Node *> nodes;
+        unordered_set<string> q;
+        unordered_set<string> q2;
+        unordered_map<string, vector<string> > prevs;
         bool found = false;
         
-        nodes[start] = NULL;
+        prevs[start] = vector<string>();
         q.insert(start);
         dict.insert(end);// !!!!
         
         while(!q.empty()) {
             
             for(auto it = q.begin(); it != q.end(); ++it) {
-                dict.erase(*it); // erase already used words
+                dict.erase(*it);
             }
             q2.clear();
             for(auto it = q.begin(); it != q.end(); ++it) {
@@ -219,15 +214,7 @@ public:
                         tmp[i] = c;
                         if(dict.find(tmp) == dict.end()) continue; // if not in dict
 
-                        Node *wordNode;
-                        if(nodes.find(tmp) == nodes.end()) {
-                            wordNode = new Node(tmp);
-                            nodes[tmp] = wordNode;
-                        } else {
-                            wordNode = nodes[tmp];
-                        }
-                        
-                        wordNode->prevs.push_back(word);
+                        prevs[tmp].push_back(word);
                         
                         if(tmp == end) {
                             found = true;
@@ -240,7 +227,7 @@ public:
             if(found) {
                 vector<string> v;
                 v.push_back(end);
-                backtrackPath(nodes, end, v, res);
+                backtrackPath(prevs, end, v, res);
                 
                 return res;
             }
@@ -250,20 +237,18 @@ public:
         return res;
     }
     
-    void backtrackPath(unordered_map<string, Node*> &nodes, string str, vector<string> &v, vector<vector<string> > &res) {
-        if(nodes[str] == NULL) {
+    void backtrackPath(unordered_map<string, vector<string> > &prevs, string str, vector<string> &v, vector<vector<string> > &res) {
+        if(prevs[str].empty()) {
             vector<string> v_cpy(v);
             reverse(v_cpy.begin(), v_cpy.end());
             res.push_back(v_cpy);
             return;
         }
         
-        Node *node = nodes[str];
-        
-        for(int i = 0; i < node->prevs.size(); ++i) {
-            string prev = node->prevs[i];
+        for(int i = 0; i < prevs[str].size(); ++i) {
+            string prev = prevs[str][i];
             v.push_back(prev);
-            backtrackPath(nodes, prev, v, res);
+            backtrackPath(prevs, prev, v, res);
             v.pop_back();
         }
     }
