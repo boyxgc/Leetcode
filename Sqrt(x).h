@@ -1,5 +1,23 @@
 class Solution {
 public:
+   int sqrt(int x) {
+        long long l = 0;
+        long long h = x;
+        
+        while(l <= h) {
+            long long m = l + (h-l)/2;
+            long long square = m*m;
+            if(square == x) return m;
+            else if(square < x) l = m+1;
+            else h = m - 1;
+        }
+        
+        return h;
+    }
+};
+
+class Solution {
+public:
     int sqrt(int x) {
         if(x == 0) return 0;
         if(x == 1) return 1;
