@@ -3,6 +3,41 @@ public:
     int ladderLength(string start, string end, unordered_set<string> &dict) {
         if(start == end || start.size() != end.size()) return 0;
         
+        unordered_set<string> q;
+        
+        q.insert(start);
+        dict.insert(end);
+        
+        int level = 1;
+        while(!q.empty()) {
+            level++;
+            for(auto it = q.begin(); it != q.end(); ++it) {
+                dict.erase(*it);
+            }
+            unordered_set<string> tmpq;
+            for(auto it = q.begin(); it != q.end(); ++it) {
+                for(int i = 0; i < (*it).size(); ++i) {
+                    string tmpword = *it;
+                    for(char c = 'a'; c <= 'z'; ++c) {
+                        tmpword[i] = c;
+                        if(dict.find(tmpword) == dict.end()) continue;
+                        if(tmpword == end) return level;
+                        tmpq.insert(tmpword);
+                    }
+                }
+            }
+            q = tmpq;
+        }
+        
+        return 0;
+    }
+};
+
+class Solution {
+public:
+    int ladderLength(string start, string end, unordered_set<string> &dict) {
+        if(start == end || start.size() != end.size()) return 0;
+        
         unordered_set<string> trans;
         queue<string> q;
         q.push(start);
