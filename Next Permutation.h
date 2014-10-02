@@ -1,28 +1,26 @@
 class Solution {
 public:
     void nextPermutation(vector<int> &num) {
-        int size = num.size();
-        if(size == 0) return;
-        
-        for(int i = size-2; i >= 0; --i){
-            int maxmin = INT_MAX;
-            int maxindex = -1;
-            for(int j = i; j < size; ++j){
-                if(num[j] > num[i] && num[j] < maxmin){
-                    maxmin = num[j];// the least one greater than num[i]
-                    maxindex = j;
+        //find the a pair to swith, which is cloest to the end
+        for(int left = num.size() -2; left >= 0; --left) {
+            //find the smallest bigger one on the right, then sort the remain part
+            int min_bigger = -1;
+            for(int right = left + 1; right < num.size(); ++right) {
+                if(num[right] > num[left]) {
+                    if(min_bigger == -1 || num[right] < num[min_bigger]) {
+                        min_bigger = right;
+                    }
                 }
             }
-            if(maxindex >= 0){// find greater element
-                int tmp = num[i];
-                num[i] = num[maxindex];
-                num[maxindex] = tmp;
-                sort(num.begin()+i+1, num.end());// sort part after i, mk sure mini greater
+            if(min_bigger != -1) {
+                int tmp = num[min_bigger];
+                num[min_bigger] = num[left];
+                num[left] = tmp;
+                sort(num.begin()+left+1, num.end());
                 return;
             }
         }
-        
-        sort(num.begin(), num.end()); //not found
+        reverse(num.begin(), num.end());
         return;
     }
 };

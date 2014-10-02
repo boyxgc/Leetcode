@@ -2,22 +2,21 @@ class Solution {
 public:
     vector<string> generateParenthesis(int n) {
         vector<string> res;
-        generate(n,0,"",res);
-        
+        generate(0, 0, "", n, res);
         return res;
     }
-    void generate(int n, int sum, string str, vector<string> &res){
-        //let '(' be 1, and ')' be -1, anytime, the sum should be >= 0
-        if(n == 0 && sum == 0) {
-            res.push_back(str);
-            return;
+    
+private:
+    void generate(int lp, int rp,  string curr, int n, vector<string> & res) {
+        if(lp == n && rp == n) {
+            res.push_back(curr);
         }
         
-        if(n > 0){
-            generate(n-1, sum+1, str+"(", res);
+        if(rp < lp) {
+            generate(lp, rp+1, curr + ")", n, res);
         }
-        if(sum > 0){
-            generate(n, sum-1, str+")", res);
+        if(lp < n) {
+            generate(lp + 1, rp, curr+ "(", n, res);
         }
     }
 };

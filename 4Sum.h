@@ -2,44 +2,39 @@ class Solution {
 public:
     vector<vector<int> > fourSum(vector<int> &num, int target) {
         sort(num.begin(), num.end());
-        vector<vector<int> > ret;
+        
+        vector<vector<int> > res;
         int size = num.size();
-        vector<int> tmpv;
-        for(int i = 0; i < size-3; ++i) {
-            if(i > 0 && num[i] == num[i-1])// remove duplicate
-                continue;
-            for(int j = i+1; j < size-2; ++j) {
-                if(j > i+1 && num[j] == num[j-1])// remove duplicate
-                    continue;
-                int l = j+1;
-                int r = size-1;
-                while(l < r) {
-                    if(l > j+1 && num[l] == num[l-1]){// remove duplicate
-                        l++;
-                        continue;
-                    }
-                    if(r < size-1 && num[r] == num[r+1]){// remove duplicate
-                        r--;
-                        continue;
-                    }
-                    int tmp = num[i]+num[j]+num[l]+num[r];
-                    if(tmp < target){
-                        l++;
-                    } else if (tmp > target){
-                        r--;
+        for(int p1 = 0; p1 < size - 3; ++p1) {
+            if(p1 > 0 && num[p1] == num[p1-1]) continue;
+            for(int p2 = p1+1; p2 < size - 2; ++p2) {
+                if(p2 > p1+1 && num[p2] == num[p2-1]) continue;
+                
+                int p3 = p2+1;
+                int p4 = size-1;
+                while(p3 < p4) {
+                    if(p3 > p2+1 && num[p3] == num[p3-1]) {p3++; continue;}
+                    if(p4 < size-1 && num[p4] == num[p4+1]) {p4--; continue;}
+                    
+                    int sum = num[p1] + num[p2] + num[p3] + num[p4];
+                    if(sum == target) {
+                        vector<int> v;
+                        v.push_back(num[p1]);
+                        v.push_back(num[p2]);
+                        v.push_back(num[p3]);
+                        v.push_back(num[p4]);
+                        res.push_back(v);
+                        p3++;
+                        p4--;
+                    } else  if(sum > target) {
+                        p4--;
                     } else {
-                        tmpv.clear();
-                        tmpv.push_back(num[i]);
-                        tmpv.push_back(num[j]);
-                        tmpv.push_back(num[l]);
-                        tmpv.push_back(num[r]);
-                        ret.push_back(tmpv);
-                        l++;
-                        r--;
+                        p3++;
                     }
                 }
             }
         }
-        return ret;
+        
+        return res;
     }
 };

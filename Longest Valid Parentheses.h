@@ -1,33 +1,25 @@
 class Solution {
 public:
-    struct Cell {
-        char c;
-        int idx;
-        Cell(char ch, int i){c = ch; idx = i;}
-    };
-
     int longestValidParentheses(string s) {
-        stack<Cell> st;
+        stack<pair<char, int> > st; // <character, index>
         
         int longest = 0;
         for(int i = 0; i < s.size(); ++i) {
             char c = s[i];
             if(c == '(') {
-                Cell cell(c, i);
-                st.push(cell);
+                st.push(make_pair(c, i));
             } else if(c == ')') {
-                if(!st.empty() && st.top().c == '(') {
+                if(!st.empty() && st.top().first == '(') {
                     st.pop();
                     int len;
                     if(st.empty()) {
                         len = i+1;
                     } else {
-                        len = i-st.top().idx;
+                        len = i-st.top().second;
                     }
                     longest = max(longest, len);
                 } else {
-                    Cell cell(c, i);
-                    st.push(cell);
+                    st.push(make_pair(c, i));
                 }
             }
         }
