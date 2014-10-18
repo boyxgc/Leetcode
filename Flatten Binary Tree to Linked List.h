@@ -33,6 +33,57 @@ The flattened tree should look like:
  *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
  * };
  */
+
+/**
+ * Definition for binary tree
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    void flatten(TreeNode *root) {
+        if(!root) return;
+        _flatten(root);
+        root->left = NULL;
+        return;
+    }
+    
+    void _flatten(TreeNode *root) {
+        if(!root) return;
+        _flatten(root->left);
+        _flatten(root->right);
+        
+        // use root->left to store the end node of the flatten list
+        if(root->left) {
+            TreeNode *right = root->right;
+            root->right = root->left;
+            TreeNode *leftend = root->left->left;// end of left
+            root->left->left = NULL; // delete left end record
+            root->left = NULL;
+            
+            leftend->right = right;
+            
+            if(right) {
+                root->left = right->left; // end of right
+                right->left = NULL; // delete right end record
+            } else {
+                root->left = leftend;
+            }
+        } else {
+            if(root->right) {
+                root->left = root->right->left;
+                root->right->left = NULL;
+            } else {
+                root->left = root;
+            }
+        }
+    }
+};
+
 class Solution {
 public:
     void flatten(TreeNode *root) {

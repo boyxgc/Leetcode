@@ -10,29 +10,27 @@
 class Solution {
 public:
     vector<vector<int> > pathSum(TreeNode *root, int sum) {
+        vector<int> path;
         vector<vector<int> > res;
-        vector<int> tmpres;
-        path(root, sum, tmpres, res);
-        tmpres.clear();
+        generatePaths(root, path, sum, res);
+        
         return res;
     }
     
-    void path(TreeNode *root, int sum, vector<int> tmpres, vector<vector<int> > & res) {
-        if(!root){
-            tmpres.clear();
+private:
+    void generatePaths(TreeNode * r, vector<int> &path, int sum, vector<vector<int> > &res) {
+        if(!r) return;
+        if(!r->left && !r->right) {
+            if(r->val == sum) {
+                vector<int> cpy(path);
+                cpy.push_back(sum);
+                res.push_back(cpy);
+            }
             return;
         }
-        if(!root->left && !root->right && root->val == sum) {
-            tmpres.push_back(root->val);
-            res.push_back(tmpres);
-            tmpres.clear();
-            return;
-        }
-       
-        tmpres.push_back(root->val);
-        if(root->left)
-            path(root->left, sum - root->val, tmpres, res);
-        if(root->right)
-            path(root->right, sum-root->val, tmpres, res);
+        path.push_back(r->val);
+        if(r->left) generatePaths(r->left, path, sum - r->val, res);
+        if(r->right) generatePaths(r->right, path, sum - r->val, res);
+        path.pop_back();
     }
 };
