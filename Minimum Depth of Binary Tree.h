@@ -1,24 +1,27 @@
 /**
  * Definition for binary tree
- * public class TreeNode {
+ * struct TreeNode {
  *     int val;
- *     TreeNode left;
- *     TreeNode right;
- *     TreeNode(int x) { val = x; }
- * }
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
  */
-public class Solution {
-    public int minDepth(TreeNode root) {
-        if(root == null) 
-            return 0;
-        return depth(root);
+class Solution {
+public:
+    int minDepth(TreeNode *root) {
+        if(!root) return 0;
+        
+        if(!root->left && !root->right) return 1;
+        
+        int minh = INT_MAX;
+        if(root->left) {
+            minh = min(minh, minDepth(root->left));
+        }
+        if(root->right) {
+            minh = min(minh, minDepth(root->right));
+        }
+        
+        return minh + 1;
     }
-    
-    public int depth(TreeNode root) {
-        if(root == null)
-            return 100000;
-        if(root.left == null && root.right == null)
-            return 1;
-        return Math.min(depth(root.left), depth(root.right)) + 1;
-    }
-}
+};
