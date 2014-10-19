@@ -1,25 +1,28 @@
 class Solution {
 public:
     int minDistance(string word1, string word2) {
-        if(word1=="")
-            return word2.size();
-        if(word2=="")
-            return word1.size();
+        if(word1.size() == 0) return word2.size();
+        if(word2.size() == 0) return word1.size();
         
-        int l1 = word1.size();
-        int l2 = word2.size();
-        vector<vector<int> > dist(l1+1, vector<int>(l2+1, l1+l2));
-        for(int i = 0; i < l2+1; ++i)
-            dist[0][i] = i;
-        for(int j = 0; j < l1+1; ++j)
-            dist[j][0] = j;
-            
-        //Ed(i, j) = min{ Ed(i-1, j-1)+!(s[i]==s[j]), Ed(i-1, j)+1, Ed(i, j-1)+1 }
-        for(int i = 1; i <= l1; ++i) {
-            for(int j = 1; j <= l2; ++j) {
-                dist[i][j] = min(min(dist[i-1][j], dist[i][j-1])+1, dist[i-1][j-1] + !(word1[i-1]==word2[j-1]));
+        int I = word1.size();
+        int J = word2.size();
+        vector<vector<int> > distance(I+1, vector<int>(J+1 , 0));
+        
+        for(int i = 0; i <= I; ++i) distance[i][0] = i;
+        for(int j = 0; j <= J; ++j) distance[0][j] = j;
+        
+        for(int i = 1; i <= I; ++i) {
+            for(int j = 1; j <= J; ++j) {
+                distance[i][j] = min(min(distance[i-1][j], distance[i][j-1]) + 1, distance[i-1][j-1] + !(word1[i-1]==word2[j-1]));
+                // if(word1[i-1] == word2[j-1]) {
+                //     distance[i][j] = distance[i-1][j-1];
+                // } else {
+                //     distance[i][j] = min(min(distance[i-1][j]/*del*/, distance[i][j-1]/*ins*/), distance[i-1][j-1]/*sub*/) + 1;
+                // }
             }
         }
-        return dist[l1][l2];
+        
+        return distance[I][J];
     }
+  
 };
