@@ -49,16 +49,16 @@ public:
     
     //bit operation
     int res;
-    void solve(int n, int row, int col, int ld, int rd){
+    void solve(int n, int row, int colMask, int ldMask, int rdMask){
         if(row == n){
             res++;
             return;
         }
-        int avaliable = ~(col|ld|rd);
+        int avaliable = ~(colMask|ldMask|rdMask);
         for(int i = 0; i < n; ++i){
             int pos = 1 << i;
             if(pos & avaliable){
-                solve(n, row+1, col|pos, (ld|pos) << 1, (rd|pos)>>1);
+                solve(n, row+1, colMask|pos, (ldMask|pos) << 1, (rdMask|pos)>>1);
             }
         }
     }

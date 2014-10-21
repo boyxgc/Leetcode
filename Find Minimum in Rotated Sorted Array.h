@@ -1,6 +1,20 @@
 class Solution {
 public:
     int findMin(vector<int> &num) {
+        int m, l = 0, h = num.size()-1;
+        
+        while(l < h && num[l] > num[h]) {
+            m = (l+h)/2;
+            if(num[m] > num[h]) {// leftside is monotonic, descending, all the number on the left of m are greater than A[h]
+                l = m+1;
+            } else { // rightsize is monotonic, ascending, all the number on the right are smaller than A[l]
+                h = m;
+            }
+        }
+        return num[l];
+    }
+    
+    int findMin2(vector<int> &num) {
         int l = 0, h = num.size()-1;
         
         while(l < h) {

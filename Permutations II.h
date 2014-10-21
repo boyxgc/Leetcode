@@ -1,33 +1,33 @@
 class Solution {
 public:
-    void swap(int i, int j, vector<int> &num){
-        int tmp = num[i];
-        num[i] = num[j];
-        num[j] = tmp;
-    }
-    void permute(vector<int> num, int pos, vector<vector<int> > &res) {
-        if(pos >= num.size())
-            return;
-        permute(num, pos+1, res);
-        int lastswap = num[pos];
-        for(int i = pos+1; i < num.size(); ++i){
-            if(num[i] == lastswap) continue;
-            lastswap = num[i];
-
-            num.erase(num.begin()+i);
-            num.insert(num.begin()+pos, lastswap);
-            res.push_back(num);
-            permute(num, pos+1, res);
-            num.erase(num.begin()+pos);
-            num.insert(num.begin()+i, lastswap);
-        }
-    }
     vector<vector<int> > permuteUnique(vector<int> &num) {
         sort(num.begin(), num.end());
+        vector<vector<int> > res;
+        generatePermutations(num, 0, res);
         
-        vector<vector<int> > ret;
-        ret.push_back(num);
-        permute(num, 0, ret);
-        return ret;
+        return res;
+    }
+private:
+    void generatePermutations(vector<int> &num, int pos, vector<vector<int> > &res) {
+        if(pos == num.size()-1) {
+            vector<int> copy(num);
+            res.push_back(copy);
+            return;
+        }
+        
+        int prev = num[pos] -1;//not equal to num[pos]
+        for(int i = pos; i < num.size(); ++i) {
+            if(num[i] == prev) continue;
+            prev = num[i];
+            move(i, pos, num); // cannot use swap here, bacause swap will break the order of numbers
+            generatePermutations(num, pos+1, res);
+            move(pos, i, num);
+        }
+    }
+    
+    void move(int from, int to, vector<int> &num) {
+        int tmp = num[from];
+        num.erase(num.begin()+from);
+        num.insert(num.begin()+to, tmp);
     }
 };

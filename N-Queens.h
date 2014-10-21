@@ -56,19 +56,19 @@ public:
     }
     
 private:
-    void solve(vector<string> &board, int row, int col, int diagl, int diagr, vector<vector<string> > &res) {
+    void solve(vector<string> &board, int row, int colMask, int diaglMask, int diagrMask, vector<vector<string> > &res) {
         if(row == board.size()) {
             vector<string> copy(board);
             res.push_back(copy);
             return;
         }
         
-        int available = ~(col | diagl | diagr);
+        int available = ~(colMask | diaglMask | diagrMask);
         for(int i = 0; i < board.size(); ++i) {
             int pos = 1 << i;
             if( pos & available) {
                 board[row][i] = 'Q';
-                solve(board, row + 1, col | pos, (diagl | pos) >> 1, (diagr | pos) << 1, res);
+                solve(board, row + 1, colMask | pos, (diaglMask | pos) >> 1, (diagrMask | pos) << 1, res);
                 board[row][i] = '.';
             }
         }
